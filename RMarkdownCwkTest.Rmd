@@ -1,0 +1,27 @@
+---
+title: "Main"
+author: "Ben Coombs"
+date: "11/11/2020"
+output: pdf_document
+---
+
+# Testing RMarkdown and Github
+
+The *code chunk* below performs the following:
+
+-installs necessary libraries
+-presents a table with selected details of the 10 Gentoo penguins with the **largest** body mass.
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+library(knitr)
+library(palmerpenguins)
+
+#q2.2
+penguins %>%
+  select(species, island, bill_length_mm, body_mass_g) %>%
+  filter(species == "Gentoo") %>%
+  arrange(-body_mass_g) %>%
+  slice_head(n = 10) %>%
+  knitr::kable()
+```
