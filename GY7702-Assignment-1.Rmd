@@ -93,7 +93,7 @@ island_bill_length <- penguins %>%
   arrange(-avg_bill_length_mm)
 
 #Display the table
-knitr::kable(island_bill_length)
+kable(island_bill_length)
 ```
 
 ### Q2.4: write the code necessary to create a table showing the minimum, median and maximum proportion between *bill length* and *bill depth* by *species*.
@@ -121,7 +121,7 @@ bill_ratios <- penguins %>%
   )
 
 #Display the table
-knitr::kable(bill_ratios)
+kable(bill_ratios)
 ```
 
 ## Question 3
@@ -149,7 +149,7 @@ This message indicates that the CSV has been successfully loaded.
 #named Ealing_complete_covid_data
 Ealing_complete_covid_data <- covid_data %>%
   #Create complete table with a row for each day and area
-  tidyr::complete(specimen_date, area_name) %>%
+  complete(specimen_date, area_name) %>%
   #Arrange the table by area name (A-Z) and specimen date (oldest to newest)
   arrange(area_name, specimen_date) %>%
   #Group by area name to avoid the risk of filling NA values in a later step 
@@ -157,9 +157,9 @@ Ealing_complete_covid_data <- covid_data %>%
   group_by(area_name) %>%
   #Fill NA values of new and cumulative cases with the value of the previous 
   #date for that area, if possible
-  tidyr::fill(newCasesBySpecimenDate, cumCasesBySpecimenDate) %>%
+  fill(newCasesBySpecimenDate, cumCasesBySpecimenDate) %>%
   #Replace any remaining NA values with 0
-  tidyr::replace_na(list(newCasesBySpecimenDate = 0, 
+  replace_na(list(newCasesBySpecimenDate = 0, 
                          cumCasesBySpecimenDate = 0)
                     ) %>%
   #Subset the assigned area
@@ -306,7 +306,7 @@ Obviously, in order to compare with another area, I need to obtain these figures
 #First of all, I need the complete table containing a row for each day and area
 complete_covid_data <- covid_data %>%
   #Create complete table with a row for each day and area
-  tidyr::complete(specimen_date, area_name) %>%
+  complete(specimen_date, area_name) %>%
   #Arrange the table by area name (A-Z) and specimen date (oldest to newest)
   arrange(area_name, specimen_date) %>%
   #Group by area name to avoid the risk of filling NA values in a later step 
@@ -314,9 +314,9 @@ complete_covid_data <- covid_data %>%
   group_by(area_name) %>%
   #Fill NA values of new and cumulative cases with the value of the previous 
   #date for that area, if possible
-  tidyr::fill(newCasesBySpecimenDate, cumCasesBySpecimenDate) %>%
+  fill(newCasesBySpecimenDate, cumCasesBySpecimenDate) %>%
   #Replace any remaining NA values with 0
-  tidyr::replace_na(list(newCasesBySpecimenDate = 0, 
+  replace_na(list(newCasesBySpecimenDate = 0, 
                          cumCasesBySpecimenDate = 0)
                     )
 ```
