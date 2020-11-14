@@ -243,12 +243,21 @@ ggplot(Ealing_covid_development,
        aes(x = specimen_date, y = newCasesBySpecimenDate)
        ) +
   geom_line() +
-  scale_x_date(date_breaks = "1 month", date_labels = "%d %b %y")
+  scale_x_date(date_breaks = "1 month", date_labels = "%d %b %y") +
+  labs(x = "Date",
+       y = "New cases",
+       caption = "Figure 1: New cases between 01-03-2020 and 17-10-2020 for Ealing.")
 ```
 
-From the plot above, we can see that cases started to increase rapidly from zero from early to mid-March, reaching on average around 30 new cases per day. When the initial lockdown was introduced, the rate of increase of new cases per day started to decline, though the variation in new cases per day data is quite large. The number of new daily cases then began to follow a downward trend from mid-April, with the rate of decrease slowly tapering off until daily new cases sustained an average of just under 5 between the beginning of June and start of August. From August, daily new cases began to rise exponentially, passing April levels by late September and reaching almost 90 new cases in one day in early October.
+Figure 1 shows us that cases started to increase rapidly from zero from early to mid-March, reaching on average around 30 new cases per day. When the initial lockdown was introduced, the rate of increase of new cases per day started to decline, though the variation in new cases per day data is quite large. New daily cases then began to follow a downward trend from mid-April, with the rate of decrease slowly tapering off until daily new cases sustained an average of just under 5 between the early June and August. From August, daily new cases began to rise exponentially, passing April levels by late September and reaching almost 90 new cases in one day in early October. A slight dip does appear in the very recent data, but fluctuation in the entire time series means that we can’t confidently interpret this as the start of a downward trend.
 
 ## Question 4
+
+`lad19_population.csv` contains a table with the population of every local authority district mentioned in `covid19_cases_20200301_20201017.csv`.
+
+#### - Write the code necessary to load the population data into a variable and join this new information with the information from the file covid19_cases_20200301_20201017.csv.
+#### - Analyse the data as you see fit. The end result should be one (max two) tables illustrating the spread of covid-19 in the area assigned to your student ID in the table in the appendix. For instance, the analysis could illustrate the development of cases over time, compared to the population, or it could illustrate a comparison with other areas in the region.
+#### - Include a short text (max 250 words) providing a short description of the analysis and interpretation of the results.
 
 ```{r}
 #Load the csv data to a variable
@@ -401,9 +410,12 @@ Ealing_v_Powys_per_100k <- Ealing_v_Powys %>%
 #Plot both new case rates per 100,000 people per day on the same chart
 Ealing_v_Powys_per_100k %>%
   ggplot(aes(x = specimen_date)) +
-  geom_smooth(aes(y = Ealing_new_cases_per_100k), col = 'blue') +
-  geom_smooth(aes(y = Powys_new_cases_per_100k), col = 'red') +
-  scale_x_date(date_breaks = "1 month", date_labels = "%d %b %y")
+  geom_smooth(aes(y = Ealing_new_cases_per_100k), colour = 'blue') +
+  geom_smooth(aes(y = Powys_new_cases_per_100k), colour = 'red') +
+  scale_x_date(date_breaks = "1 month", date_labels = "%d %b %y") +
+  labs(x = "Date",
+       y = "New cases per 100,000",
+       caption = "Figure 2: Comparison of new cases per 100,000 between 01-03-2020 and 17-10-2020 for Ealing (blue) and Powys (red).")
 ```
 
 With the local authority data providing population statistics for each area, I calculated the daily new COVID-19 cases for Ealing per 100,000 of the population. The data shows that it was a very small percentage of the population getting infected each day, though the most recent figures showed that despite lockdown, almost 1% of the population had since the beginning of March tested positive for COVID-19. I used the daily new cases per 100,000 people figures to compare Ealing with a different region. I created a function to calculate new cases per 100,000 people per day for any area and compared the rate of new infection in Ealing to Powys, as Ealing is a densely populated urban area and Powys is a scarcely populated rural area. Figure 2 shows that both areas followed the same general trend, with cases rising from March into April, reaching a peak, decreasing during lockdown and levelling in the summer, only to begin to climb again from the beginning of August. Ealing’s initial peak occurred earlier than Powys’, but the rates were much higher, some days reaching above 12 per 100,000 whereas in Powys the figure only once went above 10. Both areas saw similar low figures during late June and through July, but from August to early October, Ealing has seen a much more drastic increase in cases, some days recording over 25 new cases per 100,000, and although Powys’ cases are also rising, the gap between the two areas had not been bigger.
