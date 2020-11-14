@@ -5,7 +5,7 @@ date: "14/11/2020"
 output: pdf_document
 ---
 
-# **GY7702 Assignment 1**
+# **R for Data Science - GY7702 Assignment 1**
 
 ## Loading libraries
 Throughout this assignment, I will be using the libraries tidyverse and knitr.
@@ -47,7 +47,7 @@ which(nums_new >= 5)
 ### Q2.1
 
 ```{r}
-# Install and load the library "palmerpenguins"
+# Load the installed library "palmerpenguins"
 library(palmerpenguins)
 ```
 
@@ -93,6 +93,115 @@ island_bill_length <- penguins %>%
 knitr::kable(island_bill_length)
 ```
 
+### Q2.4
 
+```{r, message=FALSE}
+#Create a table to show the maximum, median and minimum proportion between bill 
+#length and bill depth by species
+bill_ratios <- penguins %>%
+  #Only considering species, bill length and bill depth
+  select(species, bill_length_mm, bill_depth_mm) %>%
+  #Remove NA values to correctly summarise
+  filter(!is.na(bill_length_mm), !is.na(bill_depth_mm)) %>%
+  #Calculate and create a column for the bill ratio of each penguin
+  mutate(
+    bill_ratio = bill_length_mm / bill_depth_mm
+  ) %>%
+  #Group rows by species
+  group_by(species) %>%
+  #Summarise each species with their minimum, median, and maximum bill ratios
+  summarise(
+    min_proportion = min(bill_ratio),
+    median_proportion = median(bill_ratio),
+    max_proportion = max(bill_ratio)
+  )
 
+knitr::kable(bill_ratios)
+```
 
+## Question 3
+
+### Q3.1
+
+```{r}
+#Load the csv data to a variable
+covid_data <- read_csv("covid19_cases_20200301_20201017.csv")
+```
+
+### Q 3.2
+
+```{r}
+Ealing_complete_covid_data <- covid_data %>%
+  #Create complete table with a row for each day and area
+  tidyr::complete(specimen_date, area_name) %>%
+  #Arrange the table by area name (A-Z) and specimen date (oldest to newest)
+  arrange(area_name, specimen_date) %>%
+  #Group by area name to avoid the risk of filling NA values in a later step 
+  #with values from a different area
+  group_by(area_name) %>%
+  #Fill NA values of new and cumulative cases with the value of the previous 
+  #date for that area, if possible
+  tidyr::fill(newCasesBySpecimenDate, cumCasesBySpecimenDate) %>%
+  #Replace any remaining NA values with 0
+  tidyr::replace_na(list(newCasesBySpecimenDate = 0, 
+                         cumCasesBySpecimenDate = 0)
+                    ) %>%
+  #Subset the assigned area
+  filter(area_name == "Ealing") %>%
+  #Ungroup to drop area_name column
+  ungroup() %>%
+  #Drop area_name column
+  select(-area_name)
+```
+
+### Q 3.3
+
+```{r}
+#Copy of Ealing_covid_data as a new variable
+Ealing_day_before <- Ealing_complete_covid_data
+
+Ealing_covid_development <- Ealing_day_before %>%
+  #Create new column reporting the day after the date reported in Specimen_date
+  #column
+  mutate(
+    day_to_match = specimen_date + 1
+  ) %>%
+  #Drop the columns specimen_date and cumCasesBySpecimenDate
+  select(-specimen_date, -cumCasesBySpecimenDate) %>%
+  #Rename the newCasesBySpecimen date to newCases_day_before
+  rename(newCases_day_before = newCasesBySpecimenDate) %>%
+  #Join this table with Ealing_complete_covid_data where day_to_match is equal 
+  #to specimen_date
+  full_join(
+    Ealing_complete_covid_data,
+    by = c("day_to_match" = "specimen_date")
+  ) %>%
+  #Create new calculated column of new cases as a percentage of the number of 
+  #cases of the previous day
+  mutate(
+    As_percentage_of_day_before = (
+      newCasesBySpecimenDate/newCases_day_before
+      )*100
+  )
+
+#Display the first few lines
+Ealing_covid_development %>%
+slice_head(n = 10) %>%
+kable()
+```
+
+Days reporting 0 new cases lead to "Inf" being the value for 
+As_percentage_of_day_before of the following day as R is being asked to divide 
+by zero. Instead, I will replace these values with NA.
+
+```{r}
+#Replace "Inf" values in As_percentage_of_day_before with NA
+Ealing_covid_development$As_percentage_of_day_before[
+  is.infinite(Ealing_covid_development$As_percentage_of_day_before)
+  ] <- NA
+
+#Display the first few lines
+Ealing_covid_development %>%
+slice_head(n = 10) %>%
+kable()
+```
