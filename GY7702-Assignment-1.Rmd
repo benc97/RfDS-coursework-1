@@ -7,8 +7,7 @@ output: pdf_document
 
 # **R for Data Science - GY7702 Assignment 1**
 
-This document is my submission for Assignment 1 for R for Data Science (GY7702). It was created using RMarkdown in RStudio and knitted into a pdf. 
-You can find more information in my **[Github repository](https://github.com/benc97/RfDS-coursework-1)**.
+This document is my submission for Assignment 1 for R for Data Science (GY7702). It was created using RMarkdown in RStudio and knitted to a pdf. Check out my **[Github repository](https://github.com/benc97/RfDS-coursework-1)** for any updates to this markdown and more information.
 
 ## Loading libraries
 Throughout this assignment, I will be making use of the libraries `tidyverse` and `knitr`. Therefore it is a good idea to load them straight away.

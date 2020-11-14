@@ -138,12 +138,12 @@ covid_data <- read_csv("covid19_cases_20200301_20201017.csv")
 This message indicates that the CSV has been successfully loaded.
 
 ### Q3.2: write the code necessary to:
-#### - Create a complete table, containing a row for each day and area.
-#### - Replace `NA` values with the value available for the previous date.
-#### - Replace the remaining `NA` values (those that don’t have a previous value available) with zero.
-#### - Subset only the area assigned to your student ID in the table in the appendix.
-#### - Drop the `area_name` column.
-#### - Store the resulting table in a variable named `[area]_complete_covid_data` (substituting `[area]` in the name of the variable with the name of the area assigned to you).
+- Create a complete table, containing a row for each day and area.
+- Replace `NA` values with the value available for the previous date.
+- Replace the remaining `NA` values (those that don’t have a previous value available) with zero.
+- Subset only the area assigned to your student ID in the table in the appendix.
+- Drop the `area_name` column.
+- Store the resulting table in a variable named `[area]_complete_covid_data` (substituting `[area]` in the name of the variable with the name of the area assigned to you).
 
 ```{r}
 #Store this complete table that is being created into the variable
@@ -177,13 +177,13 @@ Ealing_complete_covid_data %>%
 ```
 
 ### Q3.3: Starting from the table `[area]_complete_covid_data` created for *Question 3.2*:
-### - Create a copy of `[area]_complete_covid_data`, i.e., as another variable named `[area]_day_before`.
-### - Use the library [`lubridate`](https://lubridate.tidyverse.org/) to create a new column named `day_to_match` in the new table `[area]_day_before` that reports the day after the day reported in the column `specimen_date`, as a character value (e.g., if `specimen_date` is `"2020-10-10"`, `day_to_match` should be `"2020-10-11"`). This way, the cases registered on Oct 10th will be used as point of comparison for the cases registered on Oct 11th.
-### - Drop the `specimen_date` and `cumCasesBySpecimenDate` columns from the `[area]_day_before` table.
-### - Rename the `newCasesBySpecimenDate` column of the the `[area]_day_before` table to `newCases_day_before`.
-### - Join `[area]_day_before` with `[area]_complete_covid_data`, where the column `specimen_date` of `[area]_complete_covid_data` is equal to the column `day_to_match` of `[area]_day_before`.
-### - Calculate a new column in the joined table, containing the number of new cases as a percentage of the number of new cases of the day before.
-### - Store the resulting table in a variable named `[area]_covid_development`.
+- Create a copy of `[area]_complete_covid_data`, i.e., as another variable named `[area]_day_before`.
+- Use the library [`lubridate`](https://lubridate.tidyverse.org/) to create a new column named `day_to_match` in the new table `[area]_day_before` that reports the day after the day reported in the column `specimen_date`, as a character value (e.g., if `specimen_date` is `"2020-10-10"`, `day_to_match` should be `"2020-10-11"`). This way, the cases registered on Oct 10th will be used as point of comparison for the cases registered on Oct 11th.
+- Drop the `specimen_date` and `cumCasesBySpecimenDate` columns from the `[area]_day_before` table.
+- Rename the `newCasesBySpecimenDate` column of the the `[area]_day_before` table to `newCases_day_before`.
+- Join `[area]_day_before` with `[area]_complete_covid_data`, where the column `specimen_date` of `[area]_complete_covid_data` is equal to the column `day_to_match` of `[area]_day_before`.
+- Calculate a new column in the joined table, containing the number of new cases as a percentage of the number of new cases of the day before.
+- Store the resulting table in a variable named `[area]_covid_development`.
 
 
 ```{r}
@@ -253,11 +253,13 @@ Figure 1 shows us that cases started to increase rapidly from zero from early to
 
 ## Question 4
 
-`lad19_population.csv` contains a table with the population of every local authority district mentioned in `covid19_cases_20200301_20201017.csv`.
+Download the file `lad19_population.csv` from BlackBoard, which contains a table detailing the population
+per Local Authority District in the UK.
 
-#### - Write the code necessary to load the population data into a variable and join this new information with the information from the file covid19_cases_20200301_20201017.csv.
-#### - Analyse the data as you see fit. The end result should be one (max two) tables illustrating the spread of covid-19 in the area assigned to your student ID in the table in the appendix. For instance, the analysis could illustrate the development of cases over time, compared to the population, or it could illustrate a comparison with other areas in the region.
-#### - Include a short text (max 250 words) providing a short description of the analysis and interpretation of the results.
+- Write the code necessary to load the population data into a variable and join this new information with the information from the file `covid19_cases_20200301_20201017.csv`.
+- Analyse the data as you see fit. The end result should be one (max two) tables illustrating the spread of covid-19 in the area assigned to your student ID in the table in the appendix. For instance, the analysis could illustrate the development of cases over time, compared to the population, or it could illustrate a comparison with other areas in the region.
+- Include a short text (max 250 words) providing a short description of the analysis and interpretation of the results.
+
 
 ```{r}
 #Load the csv data to a variable
