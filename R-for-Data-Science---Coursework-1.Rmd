@@ -1,0 +1,98 @@
+---
+title: "GY7702 Assignment 1"
+author: "Ben Coombs"
+date: "12/11/2020"
+output: pdf_document
+---
+
+# **GY7702 Assignment 1**
+
+## Loading libraries
+Throughout this assignment, I will be using the libraries tidyverse and knitr.
+Therefore it is a good idea to load them straight away.
+
+```{r, message=FALSE}
+library(tidyverse)
+library(knitr)
+```
+
+## Question 1
+
+### Q1.1
+
+```{r}
+#Create the vector of 25 numbers listed on the question paper
+nums <- c(NA, 3, 4, 4, 5, 2, 4, NA, 6, 3, 5, 4, 0, 5, 7, 5, NA, 5, 2, 4, NA, 
+          3, 3, 5, NA)
+#Create a new vector of the same numbers, this time with missing values (NA 
+#values omitted)
+nums_new <- nums[!is.na(nums)]
+#Check if all responses are strongly agree or strongly disagree
+all(nums_new %>% is.element(c(1,7)))
+```
+
+A return of FALSE indicates that there were participants in the survey that did 
+not either completely agree or completely disagree.
+
+### Q1.2
+
+```{r}
+#Return the positions in the vector of elements that are participants responding 
+#somehow agree or stronger (5 or greater).
+which(nums_new >= 5)
+```
+
+## Question 2
+
+### Q2.1
+
+```{r}
+# Install and load the library "palmerpenguins"
+library(palmerpenguins)
+```
+
+### Q2.2
+
+```{r}
+#Create a table to show species, island, bill length and body mass of the 10 
+#Gentoo penguins with the highest body mass
+gentoo_penguins <- penguins %>%
+  #Only want the table to show species, island, bill length and body mass
+  select(species, island, bill_length_mm, body_mass_g) %>%
+  #Only display rows of Gentoo penguins
+  filter(species == "Gentoo") %>%
+  #Arrange the rows by body mass largest to smallest
+  arrange(-body_mass_g) %>%
+  #Take the first 10 values, i.e. the 10 Gentoo penguins with the largest body 
+  #mass
+  slice_head(n = 10)
+
+# Display the table
+knitr::kable(gentoo_penguins)
+```
+
+### Q2.3
+
+```{r, message=FALSE}
+#Create a table of the average bill length per island ordered by average bill 
+#length
+island_bill_length <- penguins %>%
+  #Only considering island and bill length
+  select(island, bill_length_mm) %>%
+  #Remove NA values to correctly summarise
+  filter(!is.na(bill_length_mm)) %>%
+  #Group rows by island
+  group_by(island) %>%
+  #Summarise the islands by the average bill length
+  summarise(
+    avg_bill_length_mm = mean(bill_length_mm)
+  ) %>%
+  #Arrange the table by highest to lowest average bill length
+  arrange(-avg_bill_length_mm)
+
+knitr::kable(island_bill_length)
+```
+
+
+
+
