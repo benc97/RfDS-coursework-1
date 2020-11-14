@@ -7,17 +7,21 @@ output: pdf_document
 
 # **R for Data Science - GY7702 Assignment 1**
 
-## Loading libraries
-Throughout this assignment, I will be using the libraries `tidyverse` and `knitr`. Therefore it is a good idea to load them straight away.
+This document is my submission for Assignment 1 for R for Data Science (GY7702). It was created using RMarkdown in RStudio and knitted into a pdf. 
+You can find more information in my **[Github repository](https://github.com/benc97/RfDS-coursework-1)**.
 
-```{r, message=FALSE}
+## Loading libraries
+Throughout this assignment, I will be making use of the libraries `tidyverse` and `knitr`. Therefore it is a good idea to load them straight away.
+
+```{r message=FALSE}
 library(tidyverse)
 library(knitr)
 ```
 
 ## Question 1
 
-### Q1.1
+### Q1.1: write the code necessary to check whether all participants to the survey either completely disagree or completely agree, once the missing values are excluded.
+
 
 ```{r}
 #Create the vector of 25 numbers listed on the question paper
@@ -32,7 +36,7 @@ all(nums_new %>% is.element(c(1,7)))
 
 A return of `FALSE` indicates that there were participants in the survey that did not either completely agree or completely disagree.
 
-### Q1.2
+### Q1.2: write the code necessary to extract the indexes related to the participants in the survey who at least somehow agree or more.
 
 ```{r}
 #Return the positions in the vector of elements that are participants responding 
@@ -42,14 +46,14 @@ which(nums_new >= 5)
 
 ## Question 2
 
-### Q2.1
+### Q2.1: Install the library [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/articles/intro.html)
 
 ```{r}
 #Load the installed library "palmerpenguins"
 library(palmerpenguins)
 ```
 
-### Q2.2
+### Q2.2: write the code necessary to create a table showing *species*, *island*, *bill length* and *body mass* of the 10 *Gentoo* penguins in the penguins table with the highest *body mass*.
 
 ```{r}
 #Create a table to show species, island, bill length and body mass of the 10 
@@ -66,10 +70,11 @@ gentoo_penguins <- penguins %>%
   slice_head(n = 10)
 
 #Display the table
-knitr::kable(gentoo_penguins)
+kable(gentoo_penguins)
 ```
 
-### Q2.3
+### Q2.3: write the code necessary to create a table showing the average *bill length* per *island*, ordered by average *bill length*.
+
 
 ```{r, message=FALSE}
 #Create a table of the average bill length per island ordered by average bill 
@@ -92,7 +97,8 @@ island_bill_length <- penguins %>%
 knitr::kable(island_bill_length)
 ```
 
-### Q2.4
+### Q2.4: write the code necessary to create a table showing the minimum, median and maximum proportion between *bill length* and *bill depth* by *species*.
+
 
 ```{r, message=FALSE}
 #Create a table to show the maximum, median and minimum proportion between bill 
@@ -121,7 +127,9 @@ knitr::kable(bill_ratios)
 
 ## Question 3
 
-### Q3.1
+### Q3.1: write the code necessary to load the data from `covid19_cases_20200301_20201017.csv` to a variable named `covid_data`.
+
+`covid19_cases_20200301_20201017.csv` contains information [**from the UK Government**](https://coronavirus.data.gov.uk/details/cases) on the number of new and cumulative cases of covid-19 from 1st March to 17th October in the UK.
 
 ```{r}
 #Load the csv data to a variable
@@ -129,7 +137,13 @@ covid_data <- read_csv("covid19_cases_20200301_20201017.csv")
 ```
 This message indicates that the CSV has been successfully loaded.
 
-### Q3.2
+### Q3.2: write the code necessary to:
+#### - Create a complete table, containing a row for each day and area.
+#### - Replace `NA` values with the value available for the previous date.
+#### - Replace the remaining `NA` values (those that don’t have a previous value available) with zero.
+#### - Subset only the area assigned to your student ID in the table in the appendix.
+#### - Drop the `area_name` column.
+#### - Store the resulting table in a variable named `[area]_complete_covid_data` (substituting `[area]` in the name of the variable with the name of the area assigned to you).
 
 ```{r}
 #Store this complete table that is being created into the variable
@@ -162,15 +176,19 @@ Ealing_complete_covid_data %>%
   kable()
 ```
 
-### Q3.3
+### Q3.3: Starting from the table `[area]_complete_covid_data` created for *Question 3.2*:
+### - Create a copy of `[area]_complete_covid_data`, i.e., as another variable named `[area]_day_before`.
+### - Use the library [`lubridate`](https://lubridate.tidyverse.org/) to create a new column named `day_to_match` in the new table `[area]_day_before` that reports the day after the day reported in the column `specimen_date`, as a character value (e.g., if `specimen_date` is `"2020-10-10"`, `day_to_match` should be `"2020-10-11"`). This way, the cases registered on Oct 10th will be used as point of comparison for the cases registered on Oct 11th.
+### - Drop the `specimen_date` and `cumCasesBySpecimenDate` columns from the `[area]_day_before` table.
+### - Rename the `newCasesBySpecimenDate` column of the the `[area]_day_before` table to `newCases_day_before`.
+### - Join `[area]_day_before` with `[area]_complete_covid_data`, where the column `specimen_date` of `[area]_complete_covid_data` is equal to the column `day_to_match` of `[area]_day_before`.
+### - Calculate a new column in the joined table, containing the number of new cases as a percentage of the number of new cases of the day before.
+### - Store the resulting table in a variable named `[area]_covid_development`.
+
 
 ```{r}
 #Create a copy of Ealing_covid_data as a new variable
-Ealing_day_before <- Ealing_complete_covid_data
-
-#Store this table that is being created into the variable named 
-#Ealing_covid_development
-Ealing_covid_development <- Ealing_day_before %>%
+Ealing_day_before <- Ealing_complete_covid_data %>%
   #Create new column reporting the day after the date reported in Specimen_date
   #column
   mutate(
@@ -179,12 +197,16 @@ Ealing_covid_development <- Ealing_day_before %>%
   #Drop the columns specimen_date and cumCasesBySpecimenDate
   select(-specimen_date, -cumCasesBySpecimenDate) %>%
   #Rename the newCasesBySpecimen date to newCases_day_before
-  rename(newCases_day_before = newCasesBySpecimenDate) %>%
+  rename(newCases_day_before = newCasesBySpecimenDate)
+
+#Store this table that is being created into the variable named 
+#Ealing_covid_development
+Ealing_covid_development <- Ealing_complete_covid_data %>%
   #Join this table with Ealing_complete_covid_data where day_to_match is equal 
   #to specimen_date
   full_join(
-    Ealing_complete_covid_data,
-    by = c("day_to_match" = "specimen_date")
+    Ealing_day_before,
+    by = c("specimen_date" = "day_to_match")
   ) %>%
   #Create new calculated column of new cases as a percentage of the number of 
   #cases of the previous day
@@ -194,9 +216,11 @@ Ealing_covid_development <- Ealing_day_before %>%
       )*100
   )
 
-#Display the first five lines
+#Display the first five lines of each table
+Ealing_day_before %>%
+  slice_head(n = 5)
 Ealing_covid_development %>%
-slice_head(n = 5)
+  slice_head(n = 5)
 ```
 
 Days reporting 0 new cases lead to `Inf` being the value for `As_percentage_of_day_before` of the following day as R is being asked to divide by zero. Instead, I will replace these values with `NaN`.
@@ -209,15 +233,14 @@ Ealing_covid_development$As_percentage_of_day_before[
 
 #Display the first 10 lines
 Ealing_covid_development %>%
-slice_head(n = 10) %>%
-kable()
+slice_head(n = 5)
 ```
 
-### Q3.4
+### Q3.4: Write a short text (max 150 words) describing the development of new cases in the area over time, as evidenced by the table [area]_covid_development.
 
 ```{r, warning=FALSE}
 ggplot(Ealing_covid_development, 
-       aes(x = day_to_match, y = newCasesBySpecimenDate)
+       aes(x = specimen_date, y = newCasesBySpecimenDate)
        ) +
   geom_line() +
   scale_x_date(date_breaks = "1 month", date_labels = "%d %b %y")
@@ -253,7 +276,7 @@ Ealing_covid_pop <- lad_covid %>%
   #Join the area population details onto Ealing_covid_development from Q3.3
   full_join(
     Ealing_covid_development,
-    by = c("specimen_date" = "day_to_match")
+    by = c("specimen_date" = "specimen_date")
   ) %>%
   #Calculate new column reporting new daily cases per 100k
   mutate(
@@ -365,7 +388,7 @@ Ealing_v_Powys <- Ealing_covid_pop %>%
 
 In this table, columns ending in `.x` are referring to Ealing, and columns ending in `.y` are referring to Powys.
 
-```{r, message=FALSE}
+```{r, message=FALSE, warning=FALSE}
 #Select specimen_date and the columns displaying new cases per 100,000 for each
 #area.
 Ealing_v_Powys_per_100k <- Ealing_v_Powys %>%
