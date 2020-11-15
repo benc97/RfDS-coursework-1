@@ -7,7 +7,9 @@ output: pdf_document
 
 # **R for Data Science - GY7702 Assignment 1**
 
-This document is my submission for Assignment 1 for R for Data Science (GY7702). It was created using RMarkdown in RStudio and knitted to a pdf. Check out my **[Github repository](https://github.com/benc97/RfDS-coursework-1)** for any updates to this markdown and more information.
+This document is my submission for Assignment 1 for R for Data Science (GY7702) at the University of Leicester. It was created using RMarkdown in RStudio and knitted to a pdf. Check out my **[Github repository](https://github.com/benc97/RfDS-coursework-1)** for any updates to this markdown and more information.
+
+The questions were provided by Dr. Stefano De Sabbata.
 
 ## Loading libraries
 Throughout this assignment, I will be making use of the libraries `tidyverse` and `knitr`. Therefore it is a good idea to load them straight away.
@@ -19,13 +21,17 @@ library(knitr)
 
 ## Question 1
 
-### Q1.1: write the code necessary to check whether all participants to the survey either completely disagree or completely agree, once the missing values are excluded.
-
+### Create the vector of 25 numbers between 1 and 7 listed below, using the function c. Assume those values represent the answers to a survey question, following the scale presented further below.
 
 ```{r}
 #Create the vector of 25 numbers listed on the question paper
-nums <- c(NA, 3, 4, 4, 5, 2, 4, NA, 6, 3, 5, 4, 0, 5, 7, 5, NA, 5, 2, 4, NA, 
-          3, 3, 5, NA)
+nums <- c(NA, 3, 4, 4, 5, 2, 4, NA, 6, 3, 5, 4, 0, 5, 7, 5, NA, 5, 2, 4, NA, 3,
+          3, 5, NA)
+```
+
+### Q1.1: write the code necessary to check whether all participants to the survey either completely disagree or completely agree, once the missing values are excluded.
+
+```{r}
 #Create a new vector of the same numbers, this time with missing values (NA 
 #values) omitted
 nums_new <- nums[!is.na(nums)]
@@ -39,7 +45,7 @@ A return of `FALSE` indicates that there were participants in the survey that di
 
 ```{r}
 #Return the positions in the vector of elements that are participants responding 
-#somehow agree or stronger (5 or greater).
+#somehow agree or stronger (5 or greater)
 which(nums_new >= 5)
 ```
 
@@ -48,7 +54,7 @@ which(nums_new >= 5)
 ### Q2.1: Install the library [`palmerpenguins`](https://allisonhorst.github.io/palmerpenguins/articles/intro.html)
 
 ```{r}
-#Load the installed library "palmerpenguins"
+#The library "palmerpenguins" is already installed so I just need to load it
 library(palmerpenguins)
 ```
 
@@ -128,7 +134,7 @@ kable(bill_ratios)
 
 ### Q3.1: write the code necessary to load the data from `covid19_cases_20200301_20201017.csv` to a variable named `covid_data`.
 
-`covid19_cases_20200301_20201017.csv` contains information [**from the UK Government**](https://coronavirus.data.gov.uk/details/cases) on the number of new and cumulative cases of covid-19 from 1st March to 17th October in the UK.
+`covid19_cases_20200301_20201017.csv` contains information [**from the UK Government**](https://coronavirus.data.gov.uk/details/cases) on the number of new and cumulative cases of covid-19 from 1st March 2020 to 17th October 2020 in the UK.
 
 ```{r}
 #Load the csv data to a variable
@@ -218,6 +224,7 @@ Ealing_covid_development <- Ealing_complete_covid_data %>%
 #Display the first five lines of each table
 Ealing_day_before %>%
   slice_head(n = 5)
+
 Ealing_covid_development %>%
   #dropping cumCasesBySpecimenDate so that As_percentage_of_day_before can be
   #displayed
@@ -233,7 +240,7 @@ Ealing_covid_development$As_percentage_of_day_before[
   is.infinite(Ealing_covid_development$As_percentage_of_day_before)
   ] <- NaN
 
-#Display the first 10 lines
+#Display the first 5 lines
 Ealing_covid_development %>%
   #dropping cumCasesBySpecimenDate so that As_percentage_of_day_before can be
   #displayed
@@ -298,6 +305,17 @@ Ealing_covid_pop <- lad_covid %>%
   mutate(
     new_cases_per_100k = (newCasesBySpecimenDate/area_population)*100000
   )
+
+#Display first 5 rows of table to show new cases per 100,000 column has been
+#correctly calculated.
+Ealing_covid_pop %>%
+  select(specimen_date, 
+         area_population, 
+         newCasesBySpecimenDate, 
+         new_cases_per_100k
+         ) %>%
+  slice_head(n = 5) %>%
+  kable()
 ```
 
 Obviously, in order to compare with another area, I need to obtain these figures for at least one other area. I will create a set of three functions that will be nested like a set of Russian dolls so that only a single function needs to be called to get the equivalent of `Ealing_covid_pop` for any area.
@@ -315,10 +333,16 @@ complete_covid_data <- covid_data %>%
   #Fill NA values of new and cumulative cases with the value of the previous 
   #date for that area, if possible
   fill(newCasesBySpecimenDate, cumCasesBySpecimenDate) %>%
+  ungroup() %>%
   #Replace any remaining NA values with 0
   replace_na(list(newCasesBySpecimenDate = 0, 
                          cumCasesBySpecimenDate = 0)
                     )
+
+#Display first 5 rows of table
+complete_covid_data %>%
+  slice_head(n = 5) %>%
+  kable()
 ```
 
 Now I can use this table to create a function to get complete covid data of any area, and save it to the variable `Area_complete_covid_data`.
@@ -328,11 +352,14 @@ Area_complete_covid_data <- function(area) {
   complete_covid_data %>%
   #Subset the assigned area
   filter(area_name == area) %>%
-  #Ungroup to drop area_name column
-  ungroup() %>%
   #Drop area_name column
   select(-area_name)
 }
+
+#Display first 5 rows of table with Powys as an example
+Area_complete_covid_data("Powys") %>%
+  slice_head(n = 5) %>%
+  kable()
 ```
 
 Now I can use this function to create another function to return the equivalent of `Ealing_covid_development` for any given area, and save it to the variable `Area_covid_development`.
@@ -370,6 +397,12 @@ Area_covid_development <- function(area) {
   
   covid_dev
 }
+
+#Display first 5 rows of table with Powys as an example, dropping 
+#cumCasesBySpecimenDate to show As_percentage_of_day_before
+Area_covid_development("Powys") %>%
+  select(-cumCasesBySpecimenDate) %>%
+  slice_head(n = 5)
 ```
 
 Now I can use `Area_covid_development` in a function to return the `Ealing_covid_pop` table for any area. I am going to use the function to get the daily new infection rate per 100,000 for the area Powys. 
@@ -391,7 +424,15 @@ Area_covid_pop <- function(area) {
     )
 }
 
-Powys_covid_pop <- Area_covid_pop("Powys")
+#Display first 5 rows of table with Powys as an example, dropping 
+#newCases_day_before, cumCasesBySpecimenDate and As_percentage_of_day_before 
+#to display new_cases_per_100k
+Area_covid_pop("Powys") %>%
+  select(-newCases_day_before, 
+         -cumCasesBySpecimenDate, 
+         -As_percentage_of_day_before
+         ) %>%
+  slice_head(n = 5)
 ```
 
 Now I can join `Ealing_covid_pop` to an identical table for Powys.
@@ -400,6 +441,10 @@ Ealing_v_Powys <- Ealing_covid_pop %>%
   full_join(Area_covid_pop("Powys"),
             by = c("specimen_date" = "specimen_date")
   )
+
+#Display first 5 rows of table
+Ealing_v_Powys %>%
+  slice_head(n = 5)
 ```
 
 In this table, columns ending in `.x` are referring to Ealing, and columns ending in `.y` are referring to Powys, so I should rename them to be clear what they represent.
@@ -414,6 +459,11 @@ Ealing_v_Powys_per_100k <- Ealing_v_Powys %>%
          Powys_new_cases_per_100k = new_cases_per_100k.y
          )
 
+#Display first 5 rows of table
+Ealing_v_Powys_per_100k %>%
+  slice_head(n = 5) %>%
+  kable()
+
 #Plot both new case rates per 100,000 people per day on the same chart
 Ealing_v_Powys_per_100k %>%
   ggplot(aes(x = specimen_date)) +
@@ -425,4 +475,4 @@ Ealing_v_Powys_per_100k %>%
        caption = "Figure 2: Comparison of new cases per 100,000 between 01-03-2020 and 17-10-2020 for Ealing (blue) and Powys (red).")
 ```
 
-With the local authority data providing population statistics for each area, I calculated the daily new COVID-19 cases for Ealing per 100,000 of the population. The data shows that it was a very small percentage of the population getting infected each day, though the most recent figures showed that despite lockdown, almost 1% of the population had since the beginning of March tested positive for COVID-19. I used the daily new cases per 100,000 people figures to compare Ealing with a different region. I created a function to calculate new cases per 100,000 people per day for any area and compared the rate of new infection in Ealing to Powys, as Ealing is a densely populated urban area and Powys is a scarcely populated rural area. Figure 2 shows that both areas followed the same general trend, with cases rising from March into April, reaching a peak, decreasing during lockdown and levelling in the summer, only to begin to climb again from the beginning of August. Ealing’s initial peak occurred earlier than Powys’, but the rates were much higher, some days reaching above 12 per 100,000 whereas in Powys the figure only once went above 10. Both areas saw similar low figures during late June and through July, but from August to early October, Ealing has seen a much more drastic increase in cases, some days recording over 25 new cases per 100,000, and although Powys’ cases are also rising, the gap between the two areas had not been bigger.
+With the local authority data providing population statistics for each area, I calculated the daily new COVID-19 cases for Ealing per 100,000 of the population. The data shows that it was a very small proportion of the population getting infected each day, though the most recent figures showed that despite lockdown, almost 1% of the population had since the beginning of March tested positive for COVID-19. I created a function to calculate new cases per 100,000 people per day for any area and compared the rate of new infections in Ealing to Powys. I thought they would be interesting to compare as Ealing is a densely populated urban area and Powys is a scarcely populated rural area. Figure 2 shows that both areas followed the same general trend, with cases rising from March into April, reaching a peak, decreasing during lockdown and levelling in the summer, only to begin to climb again from the beginning of August. Ealing’s initial peak occurred earlier than Powys’, but the rates were much higher, some days reaching above 12 per 100,000 whereas in Powys the number only once went above 10. Both areas saw similar low figures during late June and through July, but from August to early October, Ealing saw a much more drastic increase in new cases, some days recording over 25 new cases per 100,000. Although Powys’ cases are also rising, the difference between the two areas is largest in the most recent data.
